@@ -1,0 +1,153 @@
+options {
+    IGNORE_CASE = false;
+}
+
+PARSER_BEGIN(MiniJavaParser)
+
+public class MiniJavaParser {
+    public static void main(String[] args) throws ParseException {
+        MiniJavaParser parser = new MiniJavaParser(System.in);
+        parser.Program();
+        System.out.println("Parse success!");
+    }
+}
+
+PARSER_END(MiniJavaParser)
+
+SKIP : {
+  " "
+| "\t"
+| "\r"
+| "\n"
+}
+
+TOKEN : {
+    < INTEGER_LITERAL : (["0"-"9"])+ >
+  | < CLASS : "class" >
+  | < PUBLIC : "public" >
+  | < STATIC : "static" >
+  | < VOID : "void" >
+  | < MAIN : "main" >
+  | < STRING : "String" >
+  | < EXTENDS : "extends" >
+  | < RETURN : "return" >
+  | < INT : "int" >
+  | < BOOLEAN : "boolean" >
+  | < IF : "if" >
+  | < ELSE : "else" >
+  | < WHILE : "while" >
+  | < PRINTLN : "System.out.println" >
+  | < PRINT : "System.out.print" >
+  | < IDENTIFIER : (["a"-"z","A"-"Z"])(["a"-"z","A"-"Z","0"-"9","_"])* >
+  | < SEMICOLON : ";" >
+  | < COMMA : "," >
+  | < DOT : "." >
+  | < LPAREN : "(" >
+  | < RPAREN : ")" >
+  | < LBRACE : "{" >
+  | < RBRACE : "}" >
+  | < LBRACKET : "[" >
+  | < RBRACKET : "]" >
+  | < ASSIGN : "=" >
+  | < PLUS : "+" >
+  | < MINUS : "-" >
+  | < MULTIPLY : "*" >
+  | < DIVIDE : "/" >
+  | < EQUALS : "==" >
+  | < NOT_EQUALS : "!=" >
+  | < LESS_THAN : "<" >
+  | < LESS_THAN_OR_EQUAL : "<=" >
+  | < GREATER_THAN : ">" >
+  | < GREATER_THAN_OR_EQUAL : ">=" >
+}
+
+void Program() :
+{}
+{
+    MainClass() ( ClassDeclaration() )*
+    <EOF>
+}
+
+void MainClass() :
+{}
+{
+    <CLASS> <IDENTIFIER> <LBRACE>
+    <PUBLIC> <STATIC> <VOID> <MAIN> <LPAREN> <STRING> <LBRACKET> <RBRACKET> <IDENTIFIER> <RPAREN> <LBRACE>
+    ( VarDeclaration() )*
+    ( Statement() )*
+    <RBRACE>
+    ( MethodDeclaration() )*
+    <RBRACE>
+}
+
+void ClassDeclaration() :
+{}
+{
+    <CLASS> <IDENTIFIER> ( <EXTENDS> <IDENTIFIER> )? <LBRACE>
+    ( VarDeclaration() )*
+    ( MethodDeclaration() )*
+    <RBRACE>
+}
+
+void VarDeclaration() :
+{}
+{
+    Type() <IDENTIFIER> ( <ASSIGN> Expression() )? <SEMICOLON>
+
+}
+
+void MethodDeclaration() :
+{}
+{
+    <PUBLIC> (<STATIC>)? Type() <IDENTIFIER> <LPAREN> ( Type() <IDENTIFIER> ( <COMMA> Type() <IDENTIFIER> )* )? <RPAREN> <LBRACE>
+    ( VarDeclaration() )*
+    ( Statement() )*
+    (<RETURN> Expression() <SEMICOLON>)?
+    <RBRACE>
+}
+
+void Type() :
+{}
+{
+    <INT> | <BOOLEAN> | <STRING> | <VOID>
+}
+
+void IfStatement() :
+{}
+{
+    <IF> <LPAREN> Expression() <RPAREN> <LBRACE> ( Statement() )* <RBRACE> ( <ELSE> <LBRACE> ( Statement() )* <RBRACE> )?
+}
+
+void WhileStatement() :
+{}
+{
+    <WHILE> <LPAREN> Expression() <RPAREN> <LBRACE> ( Statement() )* <RBRACE>
+}
+
+void PrintStatement() :
+{}
+{
+    <PRINT> <LPAREN> Expression() <RPAREN> <SEMICOLON>
+}
+
+void PrintlnStatement() :
+{}
+{
+    <PRINTLN> <LPAREN> Expression() <RPAREN> <SEMICOLON>
+}
+
+void Statement() :
+{}
+{
+    <IDENTIFIER> <ASSIGN> Expression() <SEMICOLON>
+  | IfStatement()
+  | WhileStatement()
+  | PrintlnStatement()
+  | PrintStatement()
+}
+
+void Expression() :
+{}
+{
+    <INTEGER_LITERAL> | <IDENTIFIER>
+}
