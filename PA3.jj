@@ -178,7 +178,7 @@ void whileStatement() :
 void ifStatement() :
 {String m;}
 {
-    <IF> <LPAREN> m = MethodCall() <RPAREN> <LBRACE> {System.out.println("while (" + m + ") {");} statements() <RBRACE> {System.out.println("}");}
+    <IF> <LPAREN> m = Condition() <RPAREN> <LBRACE> {System.out.println("if (" + m + ") {");} statements() <RBRACE> {System.out.println("}");}
     <ELSE> <LBRACE> {System.out.println("else {");} statements() <RBRACE> {System.out.println("}");}
 }
 
@@ -258,17 +258,17 @@ void PrintlnStatement() :
 }
 
 String AssignStatement() :
-{Token id1; Token id2; String objectInstantiation; String e;}
+{Token id1; Token id2; String objectInstantiation; String e; String e2;}
 {
     LOOKAHEAD(5) id1 = <IDENTIFIER> <ASSIGN> id2 = <IDENTIFIER> <SEMICOLON>
     {
         System.out.println("        " + id1.image + " = " + id2 + ";");
         return id1.image + " = " + id2 + ";";
     }
-    | LOOKAHEAD(5) id1 = <IDENTIFIER> <ASSIGN> e = MethodCall() <SEMICOLON>
+    | LOOKAHEAD(5) e2 = MethodCall() <ASSIGN> e = MethodCall() <SEMICOLON>
     {
-        System.out.println("        " + id1.image + " = " + e + ";");
-        return id1.image + " = " + e + ";";
+        System.out.println("        " + e2 + " = " + e + ";");
+        return e2 + " = " + e + ";";
     }
     | LOOKAHEAD(5) id1 = <IDENTIFIER> <ASSIGN> objectInstantiation = ObjectInstantiation() <SEMICOLON>
     {
@@ -344,6 +344,10 @@ String MethodCall() :
     {
         return integer1.image + "." + integer2.image;
     }
+    |LOOKAHEAD(4) integer1 = <IDENTIFIER> <LBRACKET> integer2 = <IDENTIFIER> <RBRACKET>
+    {
+        return integer1.image + "[" + integer2.image + "]";
+    }
     |LOOKAHEAD(2) id = <IDENTIFIER> <LPAREN> integer1 = <INTEGER_LITERAL> <COMMA> integer2 = <INTEGER_LITERAL> <RPAREN>
     {
         return id + "(" + integer1 + ", " + integer2 + ")";
@@ -353,12 +357,14 @@ String MethodCall() :
     (operator2 = Operator() <LPAREN> m3 = MethodCall() operator3 = Operator() m4 = MethodCall() <RPAREN>
         {result += operator2 + "(" + m3 + operator3 + m4 + ")";})*
         {return result;}
-    |LOOKAHEAD(4) integer1 = <IDENTIFIER> operator = Operator() integer2 = <IDENTIFIER>
-            {result = integer1 + operator + integer2;}
-        (operator2 = Operator() integer3 = <IDENTIFIER>
-            {result += operator2 + integer3;})*
-            {return result;}
+
     |id = <IDENTIFIER> {return "" + id;}
     |id = <INTEGER_LITERAL> {return "" + id;}
 }
 
+String Condition() :
+{ Token id; Token integer1; Token integer2; Token integer3; Token integer4; String operator; String operator2; String operator3; String result; String m; String m2; String m3; String m4;}
+{
+    integer1 = <IDENTIFIER> {result = integer1.image;} (operator = Operator() integer2 = <IDENTIFIER> {result += operator + integer2.image;})*
+    {return result;}
+}
