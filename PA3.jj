@@ -164,23 +164,23 @@ void statements() :
     LOOKAHEAD(2) objectDeclearation() |
     LOOKAHEAD(2) Statement() |
     LOOKAHEAD(2) VarDeclaration() |
-    whileStatement() |
-    ifStatement()
+    whileStatement() 
+//    ifStatement()
     )*
 }
 
 void whileStatement() :
-{String m;}
+{String op;}
 {
-    <WHILE> <LPAREN> m = MethodCall() <RPAREN> <LBRACE> {System.out.println("while (" + m + ") {");} statements() <RBRACE> {System.out.println("}");}
+    <WHILE> <LPAREN> op = operation() <RPAREN> <LBRACE> {System.out.println("while (" + op + ") {");} statements() <RBRACE> {System.out.println("}");}
 }
 
-void ifStatement() :
-{String m;}
-{
-    <IF> <LPAREN> m = Condition() <RPAREN> <LBRACE> {System.out.println("if (" + m + ") {");} statements() <RBRACE> {System.out.println("}");}
-    <ELSE> <LBRACE> {System.out.println("else {");} statements() <RBRACE> {System.out.println("}");}
-}
+//void ifStatement() :
+//{String m;}
+//{
+//    <IF> <LPAREN> m = Condition() <RPAREN> <LBRACE> {System.out.println("if (" + m + ") {");} statements() <RBRACE> {System.out.println("}");}
+//    <ELSE> <LBRACE> {System.out.println("else {");} statements() <RBRACE> {System.out.println("}");}
+//}
 
 String returnStatement() :
 {String method;}
@@ -352,19 +352,45 @@ String MethodCall() :
     {
         return id + "(" + integer1 + ", " + integer2 + ")";
     }
-    |LOOKAHEAD(4) <LPAREN> m = MethodCall() operator = Operator() m2 = MethodCall() <RPAREN>
-        {result = "(" + m + operator + m2 + ")";}
-    (operator2 = Operator() <LPAREN> m3 = MethodCall() operator3 = Operator() m4 = MethodCall() <RPAREN>
-        {result += operator2 + "(" + m3 + operator3 + m4 + ")";})*
-        {return result;}
-
-    |id = <IDENTIFIER> {return "" + id;}
-    |id = <INTEGER_LITERAL> {return "" + id;}
+//    |LOOKAHEAD(4) <LPAREN> m = MethodCall() operator = Operator() m2 = MethodCall() <RPAREN>
+//        {result = "(" + m + operator + m2 + ")";}
+//    (operator2 = Operator() <LPAREN> m3 = MethodCall() operator3 = Operator() m4 = MethodCall() <RPAREN>
+//        {result += operator2 + "(" + m3 + operator3 + m4 + ")";})*
+//        {return result;}
+//
+//    |id = <IDENTIFIER> {return "" + id;}
+//    |id = <INTEGER_LITERAL> {return "" + id;}
 }
 
-String Condition() :
-{ Token id; Token integer1; Token integer2; Token integer3; Token integer4; String operator; String operator2; String operator3; String result; String m; String m2; String m3; String m4;}
+String operation():
+{String op; String result; Token id; Token integer;}
 {
-    integer1 = <IDENTIFIER> {result = integer1.image;} (operator = Operator() integer2 = <IDENTIFIER> {result += operator + integer2.image;})*
-    {return result;}
+    {result = "";}
+    (<LPAREN>
+        {result += "(";})?
+        ((id = <IDENTIFIER>
+        {result += id.image;}) | (integer = <INTEGER_LITERAL>
+        {result += integer.image;})) op = Operator()
+        {result += op;}
+        (<RPAREN>
+            {result += ")";})?
+        ((<IDENTIFIER>
+        {result += id.image;}) | (<INTEGER_LITERAL>
+        {result += integer.image;}))
+        (<RPAREN>
+        {result += ")";})?
+    ((operation()
+    {result += op;} (<LPAREN>
+                          {result += "(";})?
+                          ((id = <IDENTIFIER>
+                          {result += id.image;}) | (integer = <INTEGER_LITERAL>
+                          {result += integer.image;})) op = Operator()
+                          {result += op;}
+                          (<RPAREN>
+                              {result += ")";})?
+                          ((<IDENTIFIER>
+                          {result += id.image;}) | (<INTEGER_LITERAL>
+                          {result += integer.image;}))
+                          (<RPAREN>
+                          {result += ")";})?))*
 }
