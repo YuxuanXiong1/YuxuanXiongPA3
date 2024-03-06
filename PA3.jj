@@ -148,9 +148,11 @@ void MethodDeclaration() :
             )*
         )? <RPAREN> <LBRACE>
     {System.out.println("){");}
-    ( LOOKAHEAD(2) objectDeclearation() )*
-    ( Statement() )*
-    ( VarDeclaration() )*
+    (
+    LOOKAHEAD(2) objectDeclearation() |
+    LOOKAHEAD(2) Statement() |
+    LOOKAHEAD(2) VarDeclaration()
+    )*
     ( returnStatement() )?
     <RBRACE>
     {
@@ -236,7 +238,8 @@ void Statement() :
 String Expression() :
 {String instantiation; String methodCall;}
 {
-    LOOKAHEAD(2) <IDENTIFIER> <ASSIGN> Expression() <SEMICOLON>
+    LOOKAHEAD(3) <IDENTIFIER> <ASSIGN> <INTEGER_LITERAL> <SEMICOLON>
+    |LOOKAHEAD(3) <IDENTIFIER> <ASSIGN> Expression() <SEMICOLON>
     |LOOKAHEAD(2) <IDENTIFIER> <DOT> MethodCall()
     |LOOKAHEAD(2) <LPAREN> instantiation = ObjectInstantiation() <RPAREN> <DOT> methodCall =  MethodCall()
     {

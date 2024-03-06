@@ -223,16 +223,11 @@ public class PA3 implements PA3Constants {
      System.out.println("){");
     label_8:
     while (true) {
-      if (jj_2_2(2)) {
-        ;
-      } else {
-        break label_8;
-      }
-      objectDeclearation();
-    }
-    label_9:
-    while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case VOID:
+      case STRING:
+      case INT:
+      case BOOLEAN:
       case PRINTLN:
       case PRINT:
       case IDENTIFIER:
@@ -240,31 +235,25 @@ public class PA3 implements PA3Constants {
         break;
       default:
         jj_la1[12] = jj_gen;
-        break label_9;
+        break label_8;
       }
-      Statement();
-    }
-    label_10:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case VOID:
-      case STRING:
-      case INT:
-      case BOOLEAN:
-        ;
-        break;
-      default:
-        jj_la1[13] = jj_gen;
-        break label_10;
+      if (jj_2_2(2)) {
+        objectDeclearation();
+      } else if (jj_2_3(2)) {
+        Statement();
+      } else if (jj_2_4(2)) {
+        VarDeclaration();
+      } else {
+        jj_consume_token(-1);
+        throw new ParseException();
       }
-      VarDeclaration();
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case RETURN:
       returnStatement();
       break;
     default:
-      jj_la1[14] = jj_gen;
+      jj_la1[13] = jj_gen;
       ;
     }
     jj_consume_token(RBRACE);
@@ -273,7 +262,7 @@ public class PA3 implements PA3Constants {
 
   static final public String returnStatement() throws ParseException {
  String method;
-    if (jj_2_3(2)) {
+    if (jj_2_5(2)) {
       jj_consume_token(RETURN);
       jj_consume_token(LPAREN);
       method = MethodCall();
@@ -281,7 +270,7 @@ public class PA3 implements PA3Constants {
       jj_consume_token(SEMICOLON);
             System.out.println("    return(" + method + ");");
             {if (true) return "    return(" + method + ");";}
-    } else if (jj_2_4(2)) {
+    } else if (jj_2_6(2)) {
       jj_consume_token(RETURN);
       Expression();
       jj_consume_token(SEMICOLON);
@@ -321,7 +310,7 @@ public class PA3 implements PA3Constants {
      {if (true) return "void";}
       break;
     default:
-      jj_la1[15] = jj_gen;
+      jj_la1[14] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -348,14 +337,14 @@ public class PA3 implements PA3Constants {
 
   static final public String AssignStatement() throws ParseException {
  Token id1; Token id2;String objectInstantiation; String e;
-    if (jj_2_5(3)) {
+    if (jj_2_7(3)) {
       id1 = jj_consume_token(IDENTIFIER);
       jj_consume_token(ASSIGN);
       id2 = jj_consume_token(IDENTIFIER);
       jj_consume_token(SEMICOLON);
      System.out.println("        " + id1.image + " = " + id2.image + ";");
         {if (true) return id1.image + " = " + id2.image + ";";}
-    } else if (jj_2_6(3)) {
+    } else if (jj_2_8(3)) {
       id1 = jj_consume_token(IDENTIFIER);
       jj_consume_token(ASSIGN);
       objectInstantiation = ObjectInstantiation();
@@ -373,7 +362,7 @@ public class PA3 implements PA3Constants {
         {if (true) return id1.image + " = " + e + ";";}
         break;
       default:
-        jj_la1[16] = jj_gen;
+        jj_la1[15] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -393,7 +382,7 @@ public class PA3 implements PA3Constants {
       AssignStatement();
       break;
     default:
-      jj_la1[17] = jj_gen;
+      jj_la1[16] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -401,16 +390,21 @@ public class PA3 implements PA3Constants {
 
   static final public String Expression() throws ParseException {
  String instantiation; String methodCall;
-    if (jj_2_7(2)) {
+    if (jj_2_9(3)) {
+      jj_consume_token(IDENTIFIER);
+      jj_consume_token(ASSIGN);
+      jj_consume_token(INTEGER_LITERAL);
+      jj_consume_token(SEMICOLON);
+    } else if (jj_2_10(3)) {
       jj_consume_token(IDENTIFIER);
       jj_consume_token(ASSIGN);
       Expression();
       jj_consume_token(SEMICOLON);
-    } else if (jj_2_8(2)) {
+    } else if (jj_2_11(2)) {
       jj_consume_token(IDENTIFIER);
       jj_consume_token(DOT);
       MethodCall();
-    } else if (jj_2_9(2)) {
+    } else if (jj_2_12(2)) {
       jj_consume_token(LPAREN);
       instantiation = ObjectInstantiation();
       jj_consume_token(RPAREN);
@@ -428,7 +422,7 @@ public class PA3 implements PA3Constants {
         jj_consume_token(RPAREN);
         break;
       default:
-        jj_la1[18] = jj_gen;
+        jj_la1[17] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -438,7 +432,7 @@ public class PA3 implements PA3Constants {
 
   static final public String ObjectInstantiation() throws ParseException {
  Token id; String type;
-    if (jj_2_10(4)) {
+    if (jj_2_13(4)) {
       jj_consume_token(NEW);
       id = jj_consume_token(IDENTIFIER);
       jj_consume_token(LPAREN);
@@ -458,7 +452,7 @@ public class PA3 implements PA3Constants {
         {if (true) return "new " + type + "[]";}
         break;
       default:
-        jj_la1[19] = jj_gen;
+        jj_la1[18] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -468,12 +462,12 @@ public class PA3 implements PA3Constants {
 
   static final public String MethodCall() throws ParseException {
   Token id; Token integer1; Token integer2; String result;
-    if (jj_2_11(2)) {
+    if (jj_2_14(2)) {
       integer1 = jj_consume_token(IDENTIFIER);
       jj_consume_token(DOT);
       integer2 = jj_consume_token(IDENTIFIER);
         {if (true) return integer1.image + "." + integer2.image;}
-    } else if (jj_2_12(2)) {
+    } else if (jj_2_15(2)) {
       id = jj_consume_token(IDENTIFIER);
       jj_consume_token(LPAREN);
       integer1 = jj_consume_token(INTEGER_LITERAL);
@@ -481,7 +475,7 @@ public class PA3 implements PA3Constants {
       integer2 = jj_consume_token(INTEGER_LITERAL);
       jj_consume_token(RPAREN);
         {if (true) return id + "(" + integer1 + ", " + integer2 + ")";}
-    } else if (jj_2_13(2)) {
+    } else if (jj_2_16(2)) {
       jj_consume_token(LPAREN);
       Expression();
       jj_consume_token(RPAREN);
@@ -491,22 +485,22 @@ public class PA3 implements PA3Constants {
       case LPAREN:
         jj_consume_token(LPAREN);
         Expression();
-        label_11:
+        label_9:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case COMMA:
             ;
             break;
           default:
-            jj_la1[20] = jj_gen;
-            break label_11;
+            jj_la1[19] = jj_gen;
+            break label_9;
           }
           jj_consume_token(COMMA);
           Expression();
         }
         break;
       default:
-        jj_la1[21] = jj_gen;
+        jj_la1[20] = jj_gen;
         ;
       }
       jj_consume_token(RPAREN);
@@ -608,68 +602,69 @@ public class PA3 implements PA3Constants {
     finally { jj_save(12, xla); }
   }
 
-  static private boolean jj_3_13() {
+  static private boolean jj_2_14(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_14(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(13, xla); }
+  }
+
+  static private boolean jj_2_15(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_15(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(14, xla); }
+  }
+
+  static private boolean jj_2_16(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_16(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(15, xla); }
+  }
+
+  static private boolean jj_3_16() {
     if (jj_scan_token(LPAREN)) return true;
     if (jj_3R_14()) return true;
     return false;
   }
 
-  static private boolean jj_3_12() {
+  static private boolean jj_3_15() {
     if (jj_scan_token(IDENTIFIER)) return true;
     if (jj_scan_token(LPAREN)) return true;
     return false;
   }
 
-  static private boolean jj_3R_13() {
+  static private boolean jj_3R_11() {
     if (jj_scan_token(IDENTIFIER)) return true;
     if (jj_scan_token(IDENTIFIER)) return true;
     return false;
   }
 
-  static private boolean jj_3_11() {
+  static private boolean jj_3_14() {
     if (jj_scan_token(IDENTIFIER)) return true;
     if (jj_scan_token(DOT)) return true;
     return false;
   }
 
   static private boolean jj_3_6() {
-    if (jj_scan_token(IDENTIFIER)) return true;
-    if (jj_scan_token(ASSIGN)) return true;
-    if (jj_3R_15()) return true;
-    return false;
-  }
-
-  static private boolean jj_3_4() {
     if (jj_scan_token(RETURN)) return true;
     if (jj_3R_14()) return true;
     return false;
   }
 
   static private boolean jj_3_5() {
-    if (jj_scan_token(IDENTIFIER)) return true;
-    if (jj_scan_token(ASSIGN)) return true;
-    if (jj_scan_token(IDENTIFIER)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_22() {
-    if (jj_scan_token(NEW)) return true;
-    return false;
-  }
-
-  static private boolean jj_3_1() {
-    if (jj_3R_12()) return true;
-    if (jj_scan_token(IDENTIFIER)) return true;
-    return false;
-  }
-
-  static private boolean jj_3_3() {
     if (jj_scan_token(RETURN)) return true;
     if (jj_scan_token(LPAREN)) return true;
     return false;
   }
 
-  static private boolean jj_3_10() {
+  static private boolean jj_3R_26() {
+    if (jj_scan_token(NEW)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_13() {
     if (jj_scan_token(NEW)) return true;
     if (jj_scan_token(IDENTIFIER)) return true;
     if (jj_scan_token(LPAREN)) return true;
@@ -680,67 +675,183 @@ public class PA3 implements PA3Constants {
   static private boolean jj_3R_15() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3_10()) {
+    if (jj_3_13()) {
     jj_scanpos = xsp;
-    if (jj_3R_22()) return true;
+    if (jj_3R_26()) return true;
     }
     return false;
   }
 
-  static private boolean jj_3R_21() {
+  static private boolean jj_3R_25() {
     if (jj_scan_token(LPAREN)) return true;
     return false;
   }
 
-  static private boolean jj_3_2() {
+  static private boolean jj_3_4() {
     if (jj_3R_13()) return true;
     return false;
   }
 
-  static private boolean jj_3R_20() {
+  static private boolean jj_3R_24() {
     if (jj_3R_15()) return true;
     return false;
   }
 
-  static private boolean jj_3_9() {
+  static private boolean jj_3_3() {
+    if (jj_3R_12()) return true;
+    return false;
+  }
+
+  static private boolean jj_3_2() {
+    if (jj_3R_11()) return true;
+    return false;
+  }
+
+  static private boolean jj_3_12() {
     if (jj_scan_token(LPAREN)) return true;
     if (jj_3R_15()) return true;
     return false;
   }
 
-  static private boolean jj_3_8() {
+  static private boolean jj_3_11() {
     if (jj_scan_token(IDENTIFIER)) return true;
     if (jj_scan_token(DOT)) return true;
     return false;
   }
 
-  static private boolean jj_3R_19() {
-    if (jj_scan_token(VOID)) return true;
+  static private boolean jj_3_10() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    if (jj_scan_token(ASSIGN)) return true;
+    if (jj_3R_14()) return true;
     return false;
   }
 
-  static private boolean jj_3_7() {
+  static private boolean jj_3_9() {
     if (jj_scan_token(IDENTIFIER)) return true;
     if (jj_scan_token(ASSIGN)) return true;
+    if (jj_scan_token(INTEGER_LITERAL)) return true;
     return false;
   }
 
   static private boolean jj_3R_14() {
     Token xsp;
     xsp = jj_scanpos;
+    if (jj_3_9()) {
+    jj_scanpos = xsp;
+    if (jj_3_10()) {
+    jj_scanpos = xsp;
+    if (jj_3_11()) {
+    jj_scanpos = xsp;
+    if (jj_3_12()) {
+    jj_scanpos = xsp;
+    if (jj_3R_24()) {
+    jj_scanpos = xsp;
+    if (jj_3R_25()) return true;
+    }
+    }
+    }
+    }
+    }
+    return false;
+  }
+
+  static private boolean jj_3R_22() {
+    if (jj_3R_29()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_21() {
+    if (jj_3R_28()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_12() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_20()) {
+    jj_scanpos = xsp;
+    if (jj_3R_21()) {
+    jj_scanpos = xsp;
+    if (jj_3R_22()) return true;
+    }
+    }
+    return false;
+  }
+
+  static private boolean jj_3R_20() {
+    if (jj_3R_27()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_30() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    if (jj_scan_token(ASSIGN)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_23() {
+    if (jj_3R_10()) return true;
+    if (jj_scan_token(LBRACKET)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_8() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    if (jj_scan_token(ASSIGN)) return true;
+    if (jj_3R_15()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_29() {
+    Token xsp;
+    xsp = jj_scanpos;
     if (jj_3_7()) {
     jj_scanpos = xsp;
     if (jj_3_8()) {
     jj_scanpos = xsp;
-    if (jj_3_9()) {
+    if (jj_3R_30()) return true;
+    }
+    }
+    return false;
+  }
+
+  static private boolean jj_3_7() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    if (jj_scan_token(ASSIGN)) return true;
+    if (jj_scan_token(IDENTIFIER)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_1() {
+    if (jj_3R_10()) return true;
+    if (jj_scan_token(IDENTIFIER)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_13() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_1()) {
     jj_scanpos = xsp;
-    if (jj_3R_20()) {
-    jj_scanpos = xsp;
-    if (jj_3R_21()) return true;
+    if (jj_3R_23()) return true;
     }
-    }
-    }
-    }
+    return false;
+  }
+
+  static private boolean jj_3R_27() {
+    if (jj_scan_token(PRINTLN)) return true;
+    if (jj_scan_token(LPAREN)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_28() {
+    if (jj_scan_token(PRINT)) return true;
+    if (jj_scan_token(LPAREN)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_19() {
+    if (jj_scan_token(VOID)) return true;
     return false;
   }
 
@@ -754,12 +865,7 @@ public class PA3 implements PA3Constants {
     return false;
   }
 
-  static private boolean jj_3R_16() {
-    if (jj_scan_token(INT)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_12() {
+  static private boolean jj_3R_10() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3R_16()) {
@@ -772,6 +878,11 @@ public class PA3 implements PA3Constants {
     }
     }
     }
+    return false;
+  }
+
+  static private boolean jj_3R_16() {
+    if (jj_scan_token(INT)) return true;
     return false;
   }
 
@@ -790,7 +901,7 @@ public class PA3 implements PA3Constants {
   static private boolean jj_lookingAhead = false;
   static private boolean jj_semLA;
   static private int jj_gen;
-  static final private int[] jj_la1 = new int[22];
+  static final private int[] jj_la1 = new int[21];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static {
@@ -798,12 +909,12 @@ public class PA3 implements PA3Constants {
       jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x40,0x18a00,0x700000,0x80,0x1000,0x18a00,0x80,0x0,0x18a00,0x100,0x1000000,0x18a00,0x700000,0x18a00,0x2000,0x18a00,0x400000,0x700000,0x4004000,0x4000,0x1000000,0x4000000,};
+      jj_la1_0 = new int[] {0x40,0x18a00,0x700000,0x80,0x1000,0x18a00,0x80,0x0,0x18a00,0x100,0x1000000,0x18a00,0x718a00,0x2000,0x18a00,0x400000,0x700000,0x4004000,0x4000,0x1000000,0x4000000,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
-  static final private JJCalls[] jj_2_rtns = new JJCalls[13];
+  static final private JJCalls[] jj_2_rtns = new JJCalls[16];
   static private boolean jj_rescan = false;
   static private int jj_gc = 0;
 
@@ -825,7 +936,7 @@ public class PA3 implements PA3Constants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 22; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 21; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -840,7 +951,7 @@ public class PA3 implements PA3Constants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 22; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 21; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -858,7 +969,7 @@ public class PA3 implements PA3Constants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 22; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 21; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -869,7 +980,7 @@ public class PA3 implements PA3Constants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 22; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 21; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -886,7 +997,7 @@ public class PA3 implements PA3Constants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 22; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 21; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -896,7 +1007,7 @@ public class PA3 implements PA3Constants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 22; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 21; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1016,7 +1127,7 @@ public class PA3 implements PA3Constants {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 22; i++) {
+    for (int i = 0; i < 21; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -1055,7 +1166,7 @@ public class PA3 implements PA3Constants {
 
   static private void jj_rescan_token() {
     jj_rescan = true;
-    for (int i = 0; i < 13; i++) {
+    for (int i = 0; i < 16; i++) {
     try {
       JJCalls p = jj_2_rtns[i];
       do {
@@ -1075,6 +1186,9 @@ public class PA3 implements PA3Constants {
             case 10: jj_3_11(); break;
             case 11: jj_3_12(); break;
             case 12: jj_3_13(); break;
+            case 13: jj_3_14(); break;
+            case 14: jj_3_15(); break;
+            case 15: jj_3_16(); break;
           }
         }
         p = p.next;
