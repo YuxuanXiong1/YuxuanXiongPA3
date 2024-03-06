@@ -60,6 +60,7 @@ TOKEN : {
   | < LESS_THAN_OR_EQUAL : "<=" >
   | < GREATER_THAN : ">" >
   | < GREATER_THAN_OR_EQUAL : ">=" >
+  | < AND : "&&" >
 }
 
 void Program() :
@@ -148,11 +149,7 @@ void MethodDeclaration() :
             )*
         )? <RPAREN> <LBRACE>
     {System.out.println("){");}
-    (
-    LOOKAHEAD(2) objectDeclearation() |
-    LOOKAHEAD(2) Statement() |
-    LOOKAHEAD(2) VarDeclaration()
-    )*
+    statements()
     ( returnStatement() )?
     <RBRACE>
     {
@@ -160,13 +157,38 @@ void MethodDeclaration() :
     }
 }
 
+void statements() :
+{}
+{
+    (
+    LOOKAHEAD(2) objectDeclearation() |
+    LOOKAHEAD(2) Statement() |
+    LOOKAHEAD(2) VarDeclaration() |
+    whileStatement() |
+    ifStatement()
+    )*
+}
+
+void whileStatement() :
+{String m;}
+{
+    <WHILE> <LPAREN> m = MethodCall() <RPAREN> <LBRACE> {System.out.println("while (" + m + ") {");} statements() <RBRACE> {System.out.println("}");}
+}
+
+void ifStatement() :
+{String m;}
+{
+    <IF> <LPAREN> m = MethodCall() <RPAREN> <LBRACE> {System.out.println("while (" + m + ") {");} statements() <RBRACE> {System.out.println("}");}
+    <ELSE> <LBRACE> {System.out.println("else {");} statements() <RBRACE> {System.out.println("}");}
+}
+
 String returnStatement() :
 {String method;}
 {
     LOOKAHEAD(2) <RETURN> <LPAREN> method = MethodCall() <RPAREN> <SEMICOLON>
         {
-            System.out.println("    return(" + method + ");");
-            return "    return(" + method + ");";
+            System.out.println("        return(" + method + ");");
+            return "        return(" + method + ");";
         }
     |LOOKAHEAD(2) <RETURN> Expression() <SEMICOLON>
 }
@@ -193,6 +215,33 @@ String Type() :
     {return "void";}
 }
 
+String Operator() :
+{}
+{
+    <PLUS>
+    {return "+";}
+    | <MINUS>
+    {return "-";}
+    | <MULTIPLY>
+    {return "*";}
+    | <DIVIDE>
+    {return "/";}
+    | <EQUALS>
+    {return "==";}
+    | <NOT_EQUALS>
+    {return "!=";}
+    | <LESS_THAN>
+    {return "<";}
+    | <LESS_THAN_OR_EQUAL>
+    {return "<=";}
+    | <GREATER_THAN>
+    {return ">";}
+    | <GREATER_THAN_OR_EQUAL>
+    {return ">=";}
+    | <AND>
+    {return "&&";}
+}
+
 void PrintStatement() :
 {}
 {
@@ -209,22 +258,33 @@ void PrintlnStatement() :
 }
 
 String AssignStatement() :
-{Token id1; Token id2;String objectInstantiation; String e;}
+{Token id1; Token id2; String objectInstantiation; String e;}
 {
-    LOOKAHEAD(3) id1 = <IDENTIFIER> <ASSIGN> id2 = <IDENTIFIER> <SEMICOLON>
-    {System.out.println("        " + id1.image + " = " + id2.image + ";");
-        return id1.image + " = " + id2.image + ";";
-    }
-    | LOOKAHEAD(3) id1 = <IDENTIFIER> <ASSIGN> objectInstantiation = ObjectInstantiation() <SEMICOLON>
+    LOOKAHEAD(5) id1 = <IDENTIFIER> <ASSIGN> id2 = <IDENTIFIER> <SEMICOLON>
     {
-        System.out.println("        " + id1.image + " = " + objectInstantiation + ";");
-        return id1.image + " = " + token.image + ";";
+        System.out.println("        " + id1.image + " = " + id2 + ";");
+        return id1.image + " = " + id2 + ";";
     }
-    | id1 = <IDENTIFIER> <ASSIGN> e = Expression() <SEMICOLON>
+    | LOOKAHEAD(5) id1 = <IDENTIFIER> <ASSIGN> e = MethodCall() <SEMICOLON>
     {
         System.out.println("        " + id1.image + " = " + e + ";");
         return id1.image + " = " + e + ";";
     }
+    | LOOKAHEAD(5) id1 = <IDENTIFIER> <ASSIGN> objectInstantiation = ObjectInstantiation() <SEMICOLON>
+    {
+        System.out.println("        " + id1.image + " = " + objectInstantiation + ";");
+        return id1.image + " = " + token.image + ";";
+    }
+    | LOOKAHEAD(5) id1 = <IDENTIFIER> <ASSIGN> id2 = <INTEGER_LITERAL> <SEMICOLON>
+    {
+        System.out.println("        " + id1.image + " = " + id2.image + ";");
+        return id1.image + " = " + token.image + ";";
+    }
+    | LOOKAHEAD(5) id1 = <IDENTIFIER> <ASSIGN> e = MethodCall() <SEMICOLON>
+        {
+            System.out.println("        " + id1.image + " = " + e + ";");
+            return id1.image + " = " + token.image + ";";
+        }
 }
 
 void Statement() :
@@ -238,8 +298,7 @@ void Statement() :
 String Expression() :
 {String instantiation; String methodCall;}
 {
-    LOOKAHEAD(3) <IDENTIFIER> <ASSIGN> <INTEGER_LITERAL> <SEMICOLON>
-    |LOOKAHEAD(3) <IDENTIFIER> <ASSIGN> Expression() <SEMICOLON>
+    LOOKAHEAD(2) <IDENTIFIER> <ASSIGN> Expression() <SEMICOLON>
     |LOOKAHEAD(2) <IDENTIFIER> <DOT> MethodCall()
     |LOOKAHEAD(2) <LPAREN> instantiation = ObjectInstantiation() <RPAREN> <DOT> methodCall =  MethodCall()
     {
@@ -266,8 +325,22 @@ String ObjectInstantiation() :
 }
 
 String MethodCall() :
-{ Token id; Token integer1; Token integer2; String result;}
-{   LOOKAHEAD(2) integer1 = <IDENTIFIER> <DOT> integer2 = <IDENTIFIER>
+{ Token id; Token integer1; Token integer2; Token integer3; Token integer4; String operator; String operator2; String operator3; String result; String m; String m2; String m3; String m4;}
+{
+    LOOKAHEAD(4) integer1 = <IDENTIFIER> <DOT> integer2 = <IDENTIFIER> <LPAREN> <IDENTIFIER>
+            {
+                result = integer1.image + "." + integer2.image + "(" + token.image;
+            }
+        ( <COMMA> <IDENTIFIER>
+            {
+                result += ", " + token.image;
+            }
+        )*
+     <RPAREN>
+    {
+        return result + ")";
+    }
+    |LOOKAHEAD(4) integer1 = <IDENTIFIER> <DOT> integer2 = <IDENTIFIER>
     {
         return integer1.image + "." + integer2.image;
     }
@@ -275,5 +348,17 @@ String MethodCall() :
     {
         return id + "(" + integer1 + ", " + integer2 + ")";
     }
-    |LOOKAHEAD(2) <LPAREN> Expression() <RPAREN> <DOT> <IDENTIFIER> (<LPAREN> Expression() ( <COMMA> Expression() )* )? <RPAREN>
+    |LOOKAHEAD(4) <LPAREN> m = MethodCall() operator = Operator() m2 = MethodCall() <RPAREN>
+        {result = "(" + m + operator + m2 + ")";}
+    (operator2 = Operator() <LPAREN> m3 = MethodCall() operator3 = Operator() m4 = MethodCall() <RPAREN>
+        {result += operator2 + "(" + m3 + operator3 + m4 + ")";})*
+        {return result;}
+    |LOOKAHEAD(4) integer1 = <IDENTIFIER> operator = Operator() integer2 = <IDENTIFIER>
+            {result = integer1 + operator + integer2;}
+        (operator2 = Operator() integer3 = <IDENTIFIER>
+            {result += operator2 + integer3;})*
+            {return result;}
+    |id = <IDENTIFIER> {return "" + id;}
+    |id = <INTEGER_LITERAL> {return "" + id;}
 }
+

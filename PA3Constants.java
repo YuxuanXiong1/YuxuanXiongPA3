@@ -84,6 +84,8 @@ public interface PA3Constants {
   int GREATER_THAN = 41;
   /** RegularExpression Id. */
   int GREATER_THAN_OR_EQUAL = 42;
+  /** RegularExpression Id. */
+  int AND = 43;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -133,6 +135,7 @@ public interface PA3Constants {
     "\"<=\"",
     "\">\"",
     "\">=\"",
+    "\"&&\"",
   };
 
 }
