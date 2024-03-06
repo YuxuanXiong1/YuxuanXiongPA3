@@ -67,7 +67,7 @@ class Demo {
         }
         System.out.println(sum);
 
-        return((sum));
+        return(sum);
 
 
     }

@@ -270,7 +270,12 @@ String AssignStatement() :
         System.out.println("        " + id1.image + " = " + id2 + ";");
         return id1.image + " = " + id2 + ";";
     }
-    | LOOKAHEAD(5) id1 = <IDENTIFIER> <ASSIGN> e = MethodCall() <SEMICOLON>
+    | LOOKAHEAD(99) id1 = <IDENTIFIER> <ASSIGN> id2 = <IDENTIFIER> e2 = Operator() e = listCall() <SEMICOLON>
+    {
+        System.out.println("        " + id1.image + " = " + id2.image + e2 + e + ";");
+        return id1.image + " = " + id2.image + e2 + e + ";";
+    }
+    | LOOKAHEAD(5) id1 = <IDENTIFIER> <ASSIGN> e = operation() <SEMICOLON>
     {
             System.out.println("        " + id1.image + " = " + e + ";");
             return id1.image + " = " + e + ";";
@@ -379,14 +384,14 @@ String operation():
     {result = "";}
     (<LPAREN>
         {result += "(";})*
-        ((<IDENTIFIER>
+        (LOOKAHEAD(3)( <IDENTIFIER>
         {result += token.image;}) | (<INTEGER_LITERAL>
         {result += token.image;}) |(list = listCall()
          {result += list;})) op = Operator()
         {result += op;}
         (<RPAREN>
             {result += ")";})*
-        ((<IDENTIFIER>
+        (LOOKAHEAD(3)(<IDENTIFIER>
         {result += token.image;}) | (<INTEGER_LITERAL>
         {result += token.image;}) |(list = listCall()
         {result += list;}))
@@ -396,7 +401,7 @@ String operation():
         {result += op;}
         (<LPAREN>
             {result += "(";})*
-            ((<IDENTIFIER>
+            (LOOKAHEAD(3)(<IDENTIFIER>
                     {result += token.image;}) | (<INTEGER_LITERAL>
                     {result += token.image;}) | (list = listCall()
                     {result += list;}))
@@ -411,9 +416,8 @@ String operation():
 
 String listCall():
 {Token integer;Token id;}
-
 {
-    id = <IDENTIFIER> <LBRACKET> integer = <INTEGER_LITERAL> <RBRACKET>
+    id = <IDENTIFIER> <LBRACKET> integer = <IDENTIFIER> <RBRACKET>
     {
         return id.image + "[" + integer.image + "]";
     }
