@@ -98,10 +98,11 @@ void MainClass() :
 void ClassDeclaration() :
 {}
 {
-    <CLASS> <IDENTIFIER> ( <EXTENDS> <IDENTIFIER> )? <LBRACE>
-    {
-        System.out.println("class " + token.image + " {");
-    }
+    <CLASS> <IDENTIFIER>
+       {
+           System.out.println("class " + token.image + " {");
+       }
+    ( <EXTENDS> <IDENTIFIER> )? <LBRACE>
     ( VarDeclaration() )*
     ( MethodDeclaration() )*
     <RBRACE>
@@ -110,47 +111,74 @@ void ClassDeclaration() :
     }
 }
 
-void VarDeclaration() :
-{}
+String VarDeclaration() :
+{String type; String id;}
 {
-    Type() <IDENTIFIER> ( <ASSIGN> Expression() )? <SEMICOLON>
+    LOOKAHEAD(2) type = Type() <IDENTIFIER>
     {
-        System.out.println("    " + token.image + ";");
+        id = token.image;
+    }
+    ( <ASSIGN> Expression() )? <SEMICOLON>
+    {
+        System.out.println("        " + type + " " + id + ";");
+        return type + " " + id + ";";
+
+    }
+
+    | type = Type() <LBRACKET> <RBRACKET> <IDENTIFIER>
+    {id = token.image;}
+    <SEMICOLON>
+    {
+        System.out.println("        " + type + "[] " + id + ";");
+        return "        " + type + "[] " + id + ";";
     }
 }
 
 void MethodDeclaration() :
-{}
+{String type; String id;}
 {
-    <PUBLIC> (<STATIC>)? Type() <IDENTIFIER> <LPAREN> ( Type() <IDENTIFIER> ( <COMMA> Type() <IDENTIFIER> )* )? <RPAREN> <LBRACE>
-    {
-        System.out.println("    public " + token.image + "(" + token.next.image + ") {");
-    }
-    ( VarDeclaration() )*
+    <PUBLIC> (<STATIC>)? type = Type() <IDENTIFIER>
+    {id = token.image;}
+    <LPAREN>
+    {System.out.print("    public " + type + " " + id + "(");}
+    ( type = Type() <IDENTIFIER>
+        {System.out.print(type + " " + token.image);}
+        ( <COMMA> type = Type() <IDENTIFIER>
+            {System.out.print(", " + type +  " " + token.image);}
+            )*
+        )? <RPAREN> <LBRACE>
+    {System.out.println("){");}
     ( Statement() )*
-    (<RETURN> Expression() <SEMICOLON>)?
+    ( VarDeclaration() )*
+    (returnStatement())?
     <RBRACE>
     {
         System.out.println("    }");
     }
 }
 
-void Type() :
-{}
+String returnStatement() :
+{String method;}
 {
-    <INT> | <BOOLEAN> | <STRING> | <VOID>
+    LOOKAHEAD(2) <RETURN> Expression() <SEMICOLON>
+    |LOOKAHEAD(2) <RETURN> <LPAREN> method = MethodCall() <RPAREN> <SEMICOLON>
+    {
+        System.out.println("        return " + token.image + ";");
+        return "return " + token.image + ";";
+    }
 }
 
-void IfStatement() :
+String Type() :
 {}
 {
-    <IF> <LPAREN> Expression() <RPAREN> <LBRACE> ( Statement() )* <RBRACE> ( <ELSE> <LBRACE> ( Statement() )* <RBRACE> )?
-}
-
-void WhileStatement() :
-{}
-{
-    <WHILE> <LPAREN> Expression() <RPAREN> <LBRACE> ( Statement() )* <RBRACE>
+    <INT>
+    {return "int";}
+    | <BOOLEAN>
+    {return "Boolean";}
+    | <STRING>
+    {return "String";}
+    | <VOID>
+    {return "void";}
 }
 
 void PrintStatement() :
@@ -160,43 +188,85 @@ void PrintStatement() :
 }
 
 void PrintlnStatement() :
-{}
+{String e;}
 {
-    <PRINTLN> <LPAREN> Expression() <RPAREN> <SEMICOLON>
+    <PRINTLN> <LPAREN> e = Expression() <RPAREN> <SEMICOLON>
     {
-        System.out.println("    System.out.println(" + ");");
+        System.out.println("        System.out.println(" + e + ");");
+    }
+}
+
+String AssignStatement() :
+{Token id1; Token id2;String objectInstantiation; String e;}
+{
+    LOOKAHEAD(3) id1 = <IDENTIFIER> <ASSIGN> id2 = <IDENTIFIER> <SEMICOLON>
+    {System.out.println("        " + id1.image + " = " + id2.image + ";");
+        return id1.image + " = " + id2.image + ";";
+    }
+    | LOOKAHEAD(3) id1 = <IDENTIFIER> <ASSIGN> objectInstantiation = ObjectInstantiation() <SEMICOLON>
+    {
+        System.out.println("        " + id1.image + " = " + objectInstantiation + ";");
+        return id1.image + " = " + token.image + ";";
+    }
+    | id1 = <IDENTIFIER> <ASSIGN> e = Expression() <SEMICOLON>
+    {
+        System.out.println("        " + id1.image + " = " + e + ";");
+        return id1.image + " = " + e + ";";
     }
 }
 
 void Statement() :
 {}
 {
-    <IDENTIFIER> <ASSIGN> Expression() <SEMICOLON>
-  | IfStatement()
-  | WhileStatement()
-  | PrintlnStatement()
+  PrintlnStatement()
   | PrintStatement()
+  | AssignStatement()
 }
 
-void Expression() :
-{}
+String Expression() :
+{String instantiation; String methodCall;}
 {
     LOOKAHEAD(2) <IDENTIFIER> <ASSIGN> Expression() <SEMICOLON>
-|   LOOKAHEAD(2) <IDENTIFIER> <DOT> MethodCall()
-|   LOOKAHEAD(2) <LPAREN> ObjectInstantiation() <RPAREN> <DOT> MethodCall()
-|   ObjectInstantiation()
-|   <LPAREN> Expression() <RPAREN>
+    |LOOKAHEAD(2) <IDENTIFIER> <DOT> MethodCall()
+    |LOOKAHEAD(2) <LPAREN> instantiation = ObjectInstantiation() <RPAREN> <DOT> methodCall =  MethodCall()
+    {
+        return "(" + instantiation + ")." + methodCall;
+    }
+    |ObjectInstantiation()
+    |<LPAREN> Expression() <RPAREN>
 }
 
-void ObjectInstantiation() :
-{}
+String ObjectInstantiation() :
+{Token id; String type;}
 {
-    <NEW> <IDENTIFIER> <LPAREN> <RPAREN>
+    LOOKAHEAD(4) <NEW> id = <IDENTIFIER> <LPAREN> <RPAREN>
+    {
+        return "new " + id.image + "()";
+    }
+    | <NEW> type = Type() <LBRACKET> id = <IDENTIFIER> <RBRACKET>
+    {
+        if (id != null) {
+            return "new " + type  + "[" + id.image + "]";
+        }
+        return "new " + type + "[]";
+    }
 }
 
-void MethodCall() :
-{}
+String MethodCall() :
+{ Token id; Token integer1; Token integer2; String result;}
 {
-    LOOKAHEAD(2) <IDENTIFIER> <LPAREN> ( <INTEGER_LITERAL> ( <COMMA> <INTEGER_LITERAL> )* )? <RPAREN>
-|   LOOKAHEAD(2) <LPAREN> Expression() <RPAREN> <DOT> <IDENTIFIER> <LPAREN> ( Expression() ( <COMMA> Expression() )* )? <RPAREN>
+    LOOKAHEAD(2) id = <IDENTIFIER> <LPAREN> integer1 = <INTEGER_LITERAL> <COMMA> integer2 = <INTEGER_LITERAL> <RPAREN>
+    {
+        return id + "(" + integer1 + ", " + integer2 + ")";
+    }
+    |LOOKAHEAD(2) <LPAREN> Expression() <RPAREN> <DOT> <IDENTIFIER> (<LPAREN> Expression() ( <COMMA> Expression() )* )? <RPAREN>
+    |LOOKAHEAD(2) <IDENTIFIER>
+    {
+        result = token.image + ".";
+    }
+                  <DOT> <IDENTIFIER>
+    {
+        result += token.image;
+        return result;
+    }
 }

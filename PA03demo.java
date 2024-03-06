@@ -1,7 +1,8 @@
 class mjPP{
     public static void main(String[] args){
         System.out.println((new Demo()).go(10,3));
-    }}
+    }
+}
 
 
 
@@ -17,7 +18,7 @@ class Demo {
         log = new int[n1] ;
         debugging = b1 ;
 
-        return((log.length));
+        return(log.length);
 
 
     }
@@ -27,7 +28,8 @@ class Demo {
     public int  go(int  num ,int  v ){
 
         Demo  d;
-        int  n;            d = new Demo() ;
+        int  n;
+        d = new Demo() ;
         n = 10 ;
         n = d.setValues(num,n,true) ;
         n = d.run(n) ;

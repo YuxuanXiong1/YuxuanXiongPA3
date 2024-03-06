@@ -58,8 +58,6 @@ public class PA3 implements PA3Constants {
     label_3:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case IF:
-      case WHILE:
       case PRINTLN:
       case PRINT:
       case IDENTIFIER:
@@ -92,6 +90,7 @@ public class PA3 implements PA3Constants {
   static final public void ClassDeclaration() throws ParseException {
     jj_consume_token(CLASS);
     jj_consume_token(IDENTIFIER);
+           System.out.println("class " + token.image + " {");
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case EXTENDS:
       jj_consume_token(EXTENDS);
@@ -102,7 +101,6 @@ public class PA3 implements PA3Constants {
       ;
     }
     jj_consume_token(LBRACE);
-        System.out.println("class " + token.image + " {");
     label_5:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -134,42 +132,72 @@ public class PA3 implements PA3Constants {
         System.out.println("}");
   }
 
-  static final public void VarDeclaration() throws ParseException {
-    Type();
-    jj_consume_token(IDENTIFIER);
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case ASSIGN:
-      jj_consume_token(ASSIGN);
-      Expression();
-      break;
-    default:
-      jj_la1[7] = jj_gen;
-      ;
+  static final public String VarDeclaration() throws ParseException {
+ String type; String id;
+    if (jj_2_1(2)) {
+      type = Type();
+      jj_consume_token(IDENTIFIER);
+        id = token.image;
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case ASSIGN:
+        jj_consume_token(ASSIGN);
+        Expression();
+        break;
+      default:
+        jj_la1[7] = jj_gen;
+        ;
+      }
+      jj_consume_token(SEMICOLON);
+        System.out.println("        " + type + " " + id + ";");
+        {if (true) return type + " " + id + ";";}
+    } else {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case VOID:
+      case STRING:
+      case INT:
+      case BOOLEAN:
+        type = Type();
+        jj_consume_token(LBRACKET);
+        jj_consume_token(RBRACKET);
+        jj_consume_token(IDENTIFIER);
+     id = token.image;
+        jj_consume_token(SEMICOLON);
+        System.out.println("        " + type + "[] " + id + ";");
+        {if (true) return "        " + type + "[] " + id + ";";}
+        break;
+      default:
+        jj_la1[8] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
     }
-    jj_consume_token(SEMICOLON);
-        System.out.println("    " + token.image + ";");
+    throw new Error("Missing return statement in function");
   }
 
   static final public void MethodDeclaration() throws ParseException {
+ String type; String id;
     jj_consume_token(PUBLIC);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case STATIC:
       jj_consume_token(STATIC);
       break;
     default:
-      jj_la1[8] = jj_gen;
+      jj_la1[9] = jj_gen;
       ;
     }
-    Type();
+    type = Type();
     jj_consume_token(IDENTIFIER);
+     id = token.image;
     jj_consume_token(LPAREN);
+     System.out.print("    public " + type + " " + id + "(");
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case VOID:
     case STRING:
     case INT:
     case BOOLEAN:
-      Type();
+      type = Type();
       jj_consume_token(IDENTIFIER);
+         System.out.print(type + " " + token.image);
       label_7:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -177,22 +205,37 @@ public class PA3 implements PA3Constants {
           ;
           break;
         default:
-          jj_la1[9] = jj_gen;
+          jj_la1[10] = jj_gen;
           break label_7;
         }
         jj_consume_token(COMMA);
-        Type();
+        type = Type();
         jj_consume_token(IDENTIFIER);
+             System.out.print(", " + type +  " " + token.image);
       }
       break;
     default:
-      jj_la1[10] = jj_gen;
+      jj_la1[11] = jj_gen;
       ;
     }
     jj_consume_token(RPAREN);
     jj_consume_token(LBRACE);
-        System.out.println("    public " + token.image + "(" + token.next.image + ") {");
+     System.out.println("){");
     label_8:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case PRINTLN:
+      case PRINT:
+      case IDENTIFIER:
+        ;
+        break;
+      default:
+        jj_la1[12] = jj_gen;
+        break label_8;
+      }
+      Statement();
+    }
+    label_9:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case VOID:
@@ -202,136 +245,68 @@ public class PA3 implements PA3Constants {
         ;
         break;
       default:
-        jj_la1[11] = jj_gen;
-        break label_8;
+        jj_la1[13] = jj_gen;
+        break label_9;
       }
       VarDeclaration();
     }
-    label_9:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case IF:
-      case WHILE:
-      case PRINTLN:
-      case PRINT:
-      case IDENTIFIER:
-        ;
-        break;
-      default:
-        jj_la1[12] = jj_gen;
-        break label_9;
-      }
-      Statement();
-    }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case RETURN:
-      jj_consume_token(RETURN);
-      Expression();
-      jj_consume_token(SEMICOLON);
+      returnStatement();
       break;
     default:
-      jj_la1[13] = jj_gen;
+      jj_la1[14] = jj_gen;
       ;
     }
     jj_consume_token(RBRACE);
         System.out.println("    }");
   }
 
-  static final public void Type() throws ParseException {
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case INT:
-      jj_consume_token(INT);
-      break;
-    case BOOLEAN:
-      jj_consume_token(BOOLEAN);
-      break;
-    case STRING:
-      jj_consume_token(STRING);
-      break;
-    case VOID:
-      jj_consume_token(VOID);
-      break;
-    default:
-      jj_la1[14] = jj_gen;
+  static final public String returnStatement() throws ParseException {
+ String method;
+    if (jj_2_2(2)) {
+      jj_consume_token(RETURN);
+      Expression();
+      jj_consume_token(SEMICOLON);
+    } else if (jj_2_3(2)) {
+      jj_consume_token(RETURN);
+      jj_consume_token(LPAREN);
+      method = MethodCall();
+      jj_consume_token(RPAREN);
+      jj_consume_token(SEMICOLON);
+        System.out.println("        return " + token.image + ";");
+        {if (true) return "return " + token.image + ";";}
+    } else {
       jj_consume_token(-1);
       throw new ParseException();
     }
+    throw new Error("Missing return statement in function");
   }
 
-  static final public void IfStatement() throws ParseException {
-    jj_consume_token(IF);
-    jj_consume_token(LPAREN);
-    Expression();
-    jj_consume_token(RPAREN);
-    jj_consume_token(LBRACE);
-    label_10:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case IF:
-      case WHILE:
-      case PRINTLN:
-      case PRINT:
-      case IDENTIFIER:
-        ;
-        break;
-      default:
-        jj_la1[15] = jj_gen;
-        break label_10;
-      }
-      Statement();
-    }
-    jj_consume_token(RBRACE);
+  static final public String Type() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case ELSE:
-      jj_consume_token(ELSE);
-      jj_consume_token(LBRACE);
-      label_11:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case IF:
-        case WHILE:
-        case PRINTLN:
-        case PRINT:
-        case IDENTIFIER:
-          ;
-          break;
-        default:
-          jj_la1[16] = jj_gen;
-          break label_11;
-        }
-        Statement();
-      }
-      jj_consume_token(RBRACE);
+    case INT:
+      jj_consume_token(INT);
+     {if (true) return "int";}
+      break;
+    case BOOLEAN:
+      jj_consume_token(BOOLEAN);
+     {if (true) return "Boolean";}
+      break;
+    case STRING:
+      jj_consume_token(STRING);
+     {if (true) return "String";}
+      break;
+    case VOID:
+      jj_consume_token(VOID);
+     {if (true) return "void";}
       break;
     default:
-      jj_la1[17] = jj_gen;
-      ;
+      jj_la1[15] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
     }
-  }
-
-  static final public void WhileStatement() throws ParseException {
-    jj_consume_token(WHILE);
-    jj_consume_token(LPAREN);
-    Expression();
-    jj_consume_token(RPAREN);
-    jj_consume_token(LBRACE);
-    label_12:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case IF:
-      case WHILE:
-      case PRINTLN:
-      case PRINT:
-      case IDENTIFIER:
-        ;
-        break;
-      default:
-        jj_la1[18] = jj_gen;
-        break label_12;
-      }
-      Statement();
-    }
-    jj_consume_token(RBRACE);
+    throw new Error("Missing return statement in function");
   }
 
   static final public void PrintStatement() throws ParseException {
@@ -343,76 +318,43 @@ public class PA3 implements PA3Constants {
   }
 
   static final public void PrintlnStatement() throws ParseException {
-  String result;
+ String e;
     jj_consume_token(PRINTLN);
     jj_consume_token(LPAREN);
-    result = Expression();
+    e = Expression();
     jj_consume_token(RPAREN);
     jj_consume_token(SEMICOLON);
-        System.out.println("    System.out.println(" + result + ");");
+        System.out.println("        System.out.println(" + e + ");");
   }
 
-  static final public void Statement() throws ParseException {
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case IDENTIFIER:
-      jj_consume_token(IDENTIFIER);
+  static final public String AssignStatement() throws ParseException {
+ Token id1; Token id2;String objectInstantiation; String e;
+    if (jj_2_4(3)) {
+      id1 = jj_consume_token(IDENTIFIER);
       jj_consume_token(ASSIGN);
-      Expression();
+      id2 = jj_consume_token(IDENTIFIER);
       jj_consume_token(SEMICOLON);
-      break;
-    case IF:
-      IfStatement();
-      break;
-    case WHILE:
-      WhileStatement();
-      break;
-    case PRINTLN:
-      PrintlnStatement();
-      break;
-    case PRINT:
-      PrintStatement();
-      break;
-    default:
-      jj_la1[19] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
-  }
-
-  static final public String Expression() throws ParseException {
- String result;
-    if (jj_2_1(2)) {
-      result = jj_consume_token(IDENTIFIER);
+     System.out.println("        " + id1.image + " = " + id2.image + ";");
+        {if (true) return id1.image + " = " + id2.image + ";";}
+    } else if (jj_2_5(3)) {
+      id1 = jj_consume_token(IDENTIFIER);
       jj_consume_token(ASSIGN);
-      Expression();
+      objectInstantiation = ObjectInstantiation();
       jj_consume_token(SEMICOLON);
-                                                                           {if (true) return result;}
-    } else if (jj_2_2(2)) {
-      result = jj_consume_token(IDENTIFIER);
-      jj_consume_token(DOT);
-      MethodCall();
-                                                            {if (true) return result;}
-    } else if (jj_2_3(2)) {
-      result = jj_consume_token(LPAREN);
-      ObjectInstantiation();
-      jj_consume_token(RPAREN);
-      jj_consume_token(DOT);
-      MethodCall();
-                                                                                        {if (true) return result;}
+        System.out.println("        " + id1.image + " = " + objectInstantiation + ";");
+        {if (true) return id1.image + " = " + token.image + ";";}
     } else {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case NEW:
-        result = ObjectInstantiation();
-                                     {if (true) return result;}
-        break;
-      case LPAREN:
-        result = jj_consume_token(LPAREN);
-        Expression();
-        jj_consume_token(RPAREN);
-                                              {if (true) return result;}
+      case IDENTIFIER:
+        id1 = jj_consume_token(IDENTIFIER);
+        jj_consume_token(ASSIGN);
+        e = Expression();
+        jj_consume_token(SEMICOLON);
+        System.out.println("        " + id1.image + " = " + e + ";");
+        {if (true) return id1.image + " = " + e + ";";}
         break;
       default:
-        jj_la1[20] = jj_gen;
+        jj_la1[16] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -420,74 +362,142 @@ public class PA3 implements PA3Constants {
     throw new Error("Missing return statement in function");
   }
 
-  static final public void ObjectInstantiation() throws ParseException {
-    jj_consume_token(NEW);
-    jj_consume_token(IDENTIFIER);
-    jj_consume_token(LPAREN);
-    jj_consume_token(RPAREN);
+  static final public void Statement() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case PRINTLN:
+      PrintlnStatement();
+      break;
+    case PRINT:
+      PrintStatement();
+      break;
+    case IDENTIFIER:
+      AssignStatement();
+      break;
+    default:
+      jj_la1[17] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
   }
 
-  static final public void MethodCall() throws ParseException {
-    if (jj_2_4(2)) {
+  static final public String Expression() throws ParseException {
+ String instantiation; String methodCall;
+    if (jj_2_6(2)) {
       jj_consume_token(IDENTIFIER);
+      jj_consume_token(ASSIGN);
+      Expression();
+      jj_consume_token(SEMICOLON);
+    } else if (jj_2_7(2)) {
+      jj_consume_token(IDENTIFIER);
+      jj_consume_token(DOT);
+      MethodCall();
+    } else if (jj_2_8(2)) {
       jj_consume_token(LPAREN);
+      instantiation = ObjectInstantiation();
+      jj_consume_token(RPAREN);
+      jj_consume_token(DOT);
+      methodCall = MethodCall();
+        {if (true) return "(" + instantiation + ")." + methodCall;}
+    } else {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case INTEGER_LITERAL:
-        jj_consume_token(INTEGER_LITERAL);
-        label_13:
-        while (true) {
-          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-          case COMMA:
-            ;
-            break;
-          default:
-            jj_la1[21] = jj_gen;
-            break label_13;
-          }
-          jj_consume_token(COMMA);
-          jj_consume_token(INTEGER_LITERAL);
-        }
+      case NEW:
+        ObjectInstantiation();
+        break;
+      case LPAREN:
+        jj_consume_token(LPAREN);
+        Expression();
+        jj_consume_token(RPAREN);
         break;
       default:
-        jj_la1[22] = jj_gen;
-        ;
+        jj_la1[18] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
       }
+    }
+    throw new Error("Missing return statement in function");
+  }
+
+  static final public String ObjectInstantiation() throws ParseException {
+ Token id; String type;
+    if (jj_2_9(4)) {
+      jj_consume_token(NEW);
+      id = jj_consume_token(IDENTIFIER);
+      jj_consume_token(LPAREN);
       jj_consume_token(RPAREN);
-    } else if (jj_2_5(2)) {
+        {if (true) return "new " + id.image + "()";}
+    } else {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case NEW:
+        jj_consume_token(NEW);
+        type = Type();
+        jj_consume_token(LBRACKET);
+        id = jj_consume_token(IDENTIFIER);
+        jj_consume_token(RBRACKET);
+        if (id != null) {
+            {if (true) return "new " + type  + "[" + id.image + "]";}
+        }
+        {if (true) return "new " + type + "[]";}
+        break;
+      default:
+        jj_la1[19] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+    }
+    throw new Error("Missing return statement in function");
+  }
+
+  static final public String MethodCall() throws ParseException {
+  Token id; Token integer1; Token integer2; String result;
+    if (jj_2_10(2)) {
+      id = jj_consume_token(IDENTIFIER);
+      jj_consume_token(LPAREN);
+      integer1 = jj_consume_token(INTEGER_LITERAL);
+      jj_consume_token(COMMA);
+      integer2 = jj_consume_token(INTEGER_LITERAL);
+      jj_consume_token(RPAREN);
+        {if (true) return id + "(" + integer1 + ", " + integer2 + ")";}
+    } else if (jj_2_11(2)) {
       jj_consume_token(LPAREN);
       Expression();
       jj_consume_token(RPAREN);
       jj_consume_token(DOT);
       jj_consume_token(IDENTIFIER);
-      jj_consume_token(LPAREN);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case NEW:
-      case IDENTIFIER:
       case LPAREN:
+        jj_consume_token(LPAREN);
         Expression();
-        label_14:
+        label_10:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case COMMA:
             ;
             break;
           default:
-            jj_la1[23] = jj_gen;
-            break label_14;
+            jj_la1[20] = jj_gen;
+            break label_10;
           }
           jj_consume_token(COMMA);
           Expression();
         }
         break;
       default:
-        jj_la1[24] = jj_gen;
+        jj_la1[21] = jj_gen;
         ;
       }
       jj_consume_token(RPAREN);
+    } else if (jj_2_12(2)) {
+      jj_consume_token(IDENTIFIER);
+        result = token.image + ".";
+      jj_consume_token(DOT);
+      jj_consume_token(IDENTIFIER);
+        result += token.image;
+        {if (true) return result;}
     } else {
       jj_consume_token(-1);
       throw new ParseException();
     }
+    throw new Error("Missing return statement in function");
   }
 
   static private boolean jj_2_1(int xla) {
@@ -525,67 +535,208 @@ public class PA3 implements PA3Constants {
     finally { jj_save(4, xla); }
   }
 
-  static private boolean jj_3_5() {
-    if (jj_scan_token(LPAREN)) return true;
-    if (jj_3R_16()) return true;
-    return false;
+  static private boolean jj_2_6(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_6(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(5, xla); }
   }
 
-  static private boolean jj_3_4() {
-    if (jj_scan_token(IDENTIFIER)) return true;
-    if (jj_scan_token(LPAREN)) return true;
-    return false;
+  static private boolean jj_2_7(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_7(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(6, xla); }
   }
 
-  static private boolean jj_3R_15() {
-    if (jj_scan_token(NEW)) return true;
-    return false;
+  static private boolean jj_2_8(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_8(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(7, xla); }
   }
 
-  static private boolean jj_3R_18() {
-    if (jj_scan_token(LPAREN)) return true;
-    return false;
+  static private boolean jj_2_9(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_9(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(8, xla); }
+  }
+
+  static private boolean jj_2_10(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_10(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(9, xla); }
+  }
+
+  static private boolean jj_2_11(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_11(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(10, xla); }
+  }
+
+  static private boolean jj_2_12(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_12(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(11, xla); }
   }
 
   static private boolean jj_3R_17() {
-    if (jj_3R_15()) return true;
+    if (jj_scan_token(VOID)) return true;
     return false;
   }
 
-  static private boolean jj_3_3() {
-    if (jj_scan_token(LPAREN)) return true;
-    if (jj_3R_15()) return true;
-    return false;
-  }
-
-  static private boolean jj_3_2() {
-    if (jj_scan_token(IDENTIFIER)) return true;
-    if (jj_scan_token(DOT)) return true;
-    return false;
-  }
-
-  static private boolean jj_3_1() {
+  static private boolean jj_3_6() {
     if (jj_scan_token(IDENTIFIER)) return true;
     if (jj_scan_token(ASSIGN)) return true;
     return false;
   }
 
-  static private boolean jj_3R_16() {
+  static private boolean jj_3R_12() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3_1()) {
+    if (jj_3_6()) {
     jj_scanpos = xsp;
-    if (jj_3_2()) {
+    if (jj_3_7()) {
     jj_scanpos = xsp;
-    if (jj_3_3()) {
+    if (jj_3_8()) {
     jj_scanpos = xsp;
-    if (jj_3R_17()) {
+    if (jj_3R_18()) {
     jj_scanpos = xsp;
-    if (jj_3R_18()) return true;
+    if (jj_3R_19()) return true;
     }
     }
     }
     }
+    return false;
+  }
+
+  static private boolean jj_3R_16() {
+    if (jj_scan_token(STRING)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_15() {
+    if (jj_scan_token(BOOLEAN)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_11() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_14()) {
+    jj_scanpos = xsp;
+    if (jj_3R_15()) {
+    jj_scanpos = xsp;
+    if (jj_3R_16()) {
+    jj_scanpos = xsp;
+    if (jj_3R_17()) return true;
+    }
+    }
+    }
+    return false;
+  }
+
+  static private boolean jj_3R_14() {
+    if (jj_scan_token(INT)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_12() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    if (jj_scan_token(DOT)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_11() {
+    if (jj_scan_token(LPAREN)) return true;
+    if (jj_3R_12()) return true;
+    return false;
+  }
+
+  static private boolean jj_3_3() {
+    if (jj_scan_token(RETURN)) return true;
+    if (jj_scan_token(LPAREN)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_1() {
+    if (jj_3R_11()) return true;
+    if (jj_scan_token(IDENTIFIER)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_10() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    if (jj_scan_token(LPAREN)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_2() {
+    if (jj_scan_token(RETURN)) return true;
+    if (jj_3R_12()) return true;
+    return false;
+  }
+
+  static private boolean jj_3_5() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    if (jj_scan_token(ASSIGN)) return true;
+    if (jj_3R_13()) return true;
+    return false;
+  }
+
+  static private boolean jj_3_4() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    if (jj_scan_token(ASSIGN)) return true;
+    if (jj_scan_token(IDENTIFIER)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_20() {
+    if (jj_scan_token(NEW)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_9() {
+    if (jj_scan_token(NEW)) return true;
+    if (jj_scan_token(IDENTIFIER)) return true;
+    if (jj_scan_token(LPAREN)) return true;
+    if (jj_scan_token(RPAREN)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_13() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_9()) {
+    jj_scanpos = xsp;
+    if (jj_3R_20()) return true;
+    }
+    return false;
+  }
+
+  static private boolean jj_3R_19() {
+    if (jj_scan_token(LPAREN)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_18() {
+    if (jj_3R_13()) return true;
+    return false;
+  }
+
+  static private boolean jj_3_8() {
+    if (jj_scan_token(LPAREN)) return true;
+    if (jj_3R_13()) return true;
+    return false;
+  }
+
+  static private boolean jj_3_7() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    if (jj_scan_token(DOT)) return true;
     return false;
   }
 
@@ -604,7 +755,7 @@ public class PA3 implements PA3Constants {
   static private boolean jj_lookingAhead = false;
   static private boolean jj_semLA;
   static private int jj_gen;
-  static final private int[] jj_la1 = new int[25];
+  static final private int[] jj_la1 = new int[22];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static {
@@ -612,12 +763,12 @@ public class PA3 implements PA3Constants {
       jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x40,0x18a00,0x7a0000,0x80,0x1000,0x18a00,0x80,0x0,0x100,0x1000000,0x18a00,0x18a00,0x7a0000,0x2000,0x18a00,0x7a0000,0x7a0000,0x40000,0x7a0000,0x7a0000,0x4004000,0x1000000,0x20,0x1000000,0x4404000,};
+      jj_la1_0 = new int[] {0x40,0x18a00,0x700000,0x80,0x1000,0x18a00,0x80,0x0,0x18a00,0x100,0x1000000,0x18a00,0x700000,0x18a00,0x2000,0x18a00,0x400000,0x700000,0x4004000,0x4000,0x1000000,0x4000000,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
-  static final private JJCalls[] jj_2_rtns = new JJCalls[5];
+  static final private JJCalls[] jj_2_rtns = new JJCalls[12];
   static private boolean jj_rescan = false;
   static private int jj_gc = 0;
 
@@ -639,7 +790,7 @@ public class PA3 implements PA3Constants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 25; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 22; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -654,7 +805,7 @@ public class PA3 implements PA3Constants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 25; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 22; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -672,7 +823,7 @@ public class PA3 implements PA3Constants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 25; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 22; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -683,7 +834,7 @@ public class PA3 implements PA3Constants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 25; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 22; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -700,7 +851,7 @@ public class PA3 implements PA3Constants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 25; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 22; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -710,7 +861,7 @@ public class PA3 implements PA3Constants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 25; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 22; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -830,7 +981,7 @@ public class PA3 implements PA3Constants {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 25; i++) {
+    for (int i = 0; i < 22; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -869,7 +1020,7 @@ public class PA3 implements PA3Constants {
 
   static private void jj_rescan_token() {
     jj_rescan = true;
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 12; i++) {
     try {
       JJCalls p = jj_2_rtns[i];
       do {
@@ -881,6 +1032,13 @@ public class PA3 implements PA3Constants {
             case 2: jj_3_3(); break;
             case 3: jj_3_4(); break;
             case 4: jj_3_5(); break;
+            case 5: jj_3_6(); break;
+            case 6: jj_3_7(); break;
+            case 7: jj_3_8(); break;
+            case 8: jj_3_9(); break;
+            case 9: jj_3_10(); break;
+            case 10: jj_3_11(); break;
+            case 11: jj_3_12(); break;
           }
         }
         p = p.next;
