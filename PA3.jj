@@ -32,7 +32,6 @@ TOKEN : {
   | < EXTENDS : "extends" >
   | < RETURN : "return" >
   | < NEW : "new" >
-  | < DEMO : "Demo" >
   | < INT : "int" >
   | < BOOLEAN : "boolean" >
   | < IF : "if" >
@@ -113,7 +112,7 @@ void ClassDeclaration() :
 }
 
 String VarDeclaration() :
-{String type; String id; String id1;}
+{String type; String id;}
 {
     LOOKAHEAD(2) type = Type() <IDENTIFIER>
     {
@@ -149,8 +148,9 @@ void MethodDeclaration() :
             )*
         )? <RPAREN> <LBRACE>
     {System.out.println("){");}
-    ( VarDeclaration() )*
+    ( LOOKAHEAD(2) objectDeclearation() )*
     ( Statement() )*
+    ( VarDeclaration() )*
     ( returnStatement() )?
     <RBRACE>
     {
@@ -164,9 +164,18 @@ String returnStatement() :
     LOOKAHEAD(2) <RETURN> <LPAREN> method = MethodCall() <RPAREN> <SEMICOLON>
         {
             System.out.println("    return(" + method + ");");
-            return "return(" + method + ");";
+            return "    return(" + method + ");";
         }
     |LOOKAHEAD(2) <RETURN> Expression() <SEMICOLON>
+}
+
+ String objectDeclearation():
+{Token id1; Token id2;}
+{
+    id1 = <IDENTIFIER> id2 = <IDENTIFIER>
+    {
+    System.out.println("        " + id1.image + " " + id2.image + ";");
+    return id1.image + " " + id2.image;}
 }
 
 String Type() :
@@ -180,8 +189,6 @@ String Type() :
     {return "String";}
     | <VOID>
     {return "void";}
-    | <DEMO>
-    {return "Demo";}
 }
 
 void PrintStatement() :
