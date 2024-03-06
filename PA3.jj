@@ -358,39 +358,42 @@ String MethodCall() :
 //        {result += operator2 + "(" + m3 + operator3 + m4 + ")";})*
 //        {return result;}
 //
-//    |id = <IDENTIFIER> {return "" + id;}
-//    |id = <INTEGER_LITERAL> {return "" + id;}
+    |id = <IDENTIFIER> {return "" + id;}
+    |id = <INTEGER_LITERAL> {return "" + id;}
 }
 
+(j<n)&&(0<j)
 String operation():
 {String op; String result; Token id; Token integer;}
 {
     {result = "";}
     (<LPAREN>
         {result += "(";})?
-        ((id = <IDENTIFIER>
-        {result += id.image;}) | (integer = <INTEGER_LITERAL>
-        {result += integer.image;})) op = Operator()
+        ((<IDENTIFIER>
+        {result += token.image;}) | (<INTEGER_LITERAL>
+        {result += token.image;})) op = Operator()
         {result += op;}
         (<RPAREN>
             {result += ")";})?
         ((<IDENTIFIER>
-        {result += id.image;}) | (<INTEGER_LITERAL>
-        {result += integer.image;}))
-        (<RPAREN>
+        {result += token.image;}) | (<INTEGER_LITERAL>
+        {result += token.image;}))
+        (LOOKAHEAD(2)<RPAREN>
         {result += ")";})?
-    ((operation()
+    (LOOKAHEAD(2)(operation()
     {result += op;} (<LPAREN>
                           {result += "(";})?
-                          ((id = <IDENTIFIER>
-                          {result += id.image;}) | (integer = <INTEGER_LITERAL>
-                          {result += integer.image;})) op = Operator()
+                          ((<IDENTIFIER>
+                          {result += token.image;}) | (<INTEGER_LITERAL>
+                          {result += token.image;})) op = Operator()
                           {result += op;}
                           (<RPAREN>
                               {result += ")";})?
                           ((<IDENTIFIER>
-                          {result += id.image;}) | (<INTEGER_LITERAL>
-                          {result += integer.image;}))
-                          (<RPAREN>
+                          {result += token.image;}) | (<INTEGER_LITERAL>
+                          {result += token.image;}))
+                          (LOOKAHEAD(2)<RPAREN>
                           {result += ")";})?))*
+
+              { return result;}
 }
