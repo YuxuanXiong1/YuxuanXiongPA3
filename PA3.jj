@@ -164,23 +164,23 @@ void statements() :
     LOOKAHEAD(2) objectDeclearation() |
     LOOKAHEAD(2) Statement() |
     LOOKAHEAD(2) VarDeclaration() |
-    whileStatement() 
-//    ifStatement()
+    whileStatement() |
+    ifStatement()
     )*
 }
 
 void whileStatement() :
 {String op;}
 {
-    <WHILE> <LPAREN> op = operation() <RPAREN> <LBRACE> {System.out.println("while (" + op + ") {");} statements() <RBRACE> {System.out.println("}");}
+    <WHILE>  op = operation()  <LBRACE> {System.out.println("while (" + op + ") {");} statements() <RBRACE> {System.out.println("}");}
 }
 
-//void ifStatement() :
-//{String m;}
-//{
-//    <IF> <LPAREN> m = Condition() <RPAREN> <LBRACE> {System.out.println("if (" + m + ") {");} statements() <RBRACE> {System.out.println("}");}
-//    <ELSE> <LBRACE> {System.out.println("else {");} statements() <RBRACE> {System.out.println("}");}
-//}
+void ifStatement() :
+{String op;}
+{
+    <IF>  op = operation()  <LBRACE> {System.out.println("if (" + op + ") {");} statements() <RBRACE> {System.out.println("}");}
+    <ELSE> <LBRACE> {System.out.println("else {");} statements() <RBRACE> {System.out.println("}");}
+}
 
 String returnStatement() :
 {String method;}
@@ -249,12 +249,17 @@ void PrintStatement() :
 }
 
 void PrintlnStatement() :
-{String e;}
+{String e; Token id;}
 {
-    <PRINTLN> <LPAREN> e = Expression() <RPAREN> <SEMICOLON>
+     LOOKAHEAD(4) <PRINTLN> <LPAREN> id = <IDENTIFIER> <RPAREN> <SEMICOLON>
+          {
+              System.out.println("        System.out.println(" + id + ");");
+          }
+    |LOOKAHEAD(4) <PRINTLN> <LPAREN> e = Expression() <RPAREN> <SEMICOLON>
     {
         System.out.println("        System.out.println(" + e + ");");
     }
+
 }
 
 String AssignStatement() :
@@ -265,7 +270,12 @@ String AssignStatement() :
         System.out.println("        " + id1.image + " = " + id2 + ";");
         return id1.image + " = " + id2 + ";";
     }
-    | LOOKAHEAD(5) e2 = MethodCall() <ASSIGN> e = MethodCall() <SEMICOLON>
+        | LOOKAHEAD(5) id1 = <IDENTIFIER> <ASSIGN> e = MethodCall() <SEMICOLON>
+        {
+            System.out.println("        " + id1.image + " = " + e + ";");
+            return id1.image + " = " + e + ";";
+        }
+    | LOOKAHEAD(5) e2 = MethodCall() <ASSIGN> e = operation() <SEMICOLON>
     {
         System.out.println("        " + e2 + " = " + e + ";");
         return e2 + " = " + e + ";";
@@ -362,33 +372,33 @@ String MethodCall() :
     |id = <INTEGER_LITERAL> {return "" + id;}
 }
 
-(j<n)&&(0<j)
+
 String operation():
 {String op; String result; Token id; Token integer;}
 {
     {result = "";}
     (<LPAREN>
-        {result += "(";})?
+        {result += "(";})*
         ((<IDENTIFIER>
         {result += token.image;}) | (<INTEGER_LITERAL>
         {result += token.image;})) op = Operator()
         {result += op;}
         (<RPAREN>
-            {result += ")";})?
+            {result += ")";})*
         ((<IDENTIFIER>
         {result += token.image;}) | (<INTEGER_LITERAL>
         {result += token.image;}))
         (LOOKAHEAD(2)<RPAREN>
-        {result += ")";})?
+        {result += ")";})*
         (LOOKAHEAD(2) op = Operator()
         {result += op;}
         (<LPAREN>
-            {result += "(";})?
+            {result += "(";})*
             ((<IDENTIFIER>
                     {result += token.image;}) | (<INTEGER_LITERAL>
                     {result += token.image;}))
             (<RPAREN>
-                    {result += ")";})?
+                    {result += ")";})*
 
         )*
 
