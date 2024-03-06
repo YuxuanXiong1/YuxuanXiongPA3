@@ -172,7 +172,7 @@ String returnStatement() :
  String objectDeclearation():
 {Token id1; Token id2;}
 {
-    id1 = <IDENTIFIER> id2 = <IDENTIFIER>
+    id1 = <IDENTIFIER> id2 = <IDENTIFIER> <SEMICOLON>
     {
     System.out.println("        " + id1.image + " " + id2.image + ";");
     return id1.image + " " + id2.image;}
