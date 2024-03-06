@@ -270,11 +270,11 @@ String AssignStatement() :
         System.out.println("        " + id1.image + " = " + id2 + ";");
         return id1.image + " = " + id2 + ";";
     }
-        | LOOKAHEAD(5) id1 = <IDENTIFIER> <ASSIGN> e = MethodCall() <SEMICOLON>
-        {
+    | LOOKAHEAD(5) id1 = <IDENTIFIER> <ASSIGN> e = MethodCall() <SEMICOLON>
+    {
             System.out.println("        " + id1.image + " = " + e + ";");
             return id1.image + " = " + e + ";";
-        }
+    }
     | LOOKAHEAD(5) e2 = MethodCall() <ASSIGN> e = operation() <SEMICOLON>
     {
         System.out.println("        " + e2 + " = " + e + ";");
@@ -374,20 +374,22 @@ String MethodCall() :
 
 
 String operation():
-{String op; String result; Token id; Token integer;}
+{String op; String result; Token id; Token integer; String list;}
 {
     {result = "";}
     (<LPAREN>
         {result += "(";})*
         ((<IDENTIFIER>
         {result += token.image;}) | (<INTEGER_LITERAL>
-        {result += token.image;})) op = Operator()
+        {result += token.image;}) |(list = listCall()
+         {result += list;})) op = Operator()
         {result += op;}
         (<RPAREN>
             {result += ")";})*
         ((<IDENTIFIER>
         {result += token.image;}) | (<INTEGER_LITERAL>
-        {result += token.image;}))
+        {result += token.image;}) |(list = listCall()
+        {result += list;}))
         (LOOKAHEAD(2)<RPAREN>
         {result += ")";})*
         (LOOKAHEAD(2) op = Operator()
@@ -396,7 +398,8 @@ String operation():
             {result += "(";})*
             ((<IDENTIFIER>
                     {result += token.image;}) | (<INTEGER_LITERAL>
-                    {result += token.image;}))
+                    {result += token.image;}) | (list = listCall()
+                    {result += list;}))
             (<RPAREN>
                     {result += ")";})*
 
@@ -404,4 +407,14 @@ String operation():
 
 
               { return result;}
+}
+
+String listCall():
+{Token integer;Token id;}
+
+{
+    id = <IDENTIFIER> <LBRACKET> integer = <INTEGER_LITERAL> <RBRACKET>
+    {
+        return id.image + "[" + integer.image + "]";
+    }
 }
