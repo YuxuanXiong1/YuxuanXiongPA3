@@ -380,20 +380,18 @@ String operation():
         {result += token.image;}))
         (LOOKAHEAD(2)<RPAREN>
         {result += ")";})?
-    (LOOKAHEAD(2)(operation()
-    {result += op;} (<LPAREN>
-                          {result += "(";})?
-                          ((<IDENTIFIER>
-                          {result += token.image;}) | (<INTEGER_LITERAL>
-                          {result += token.image;})) op = Operator()
-                          {result += op;}
-                          (<RPAREN>
-                              {result += ")";})?
-                          ((<IDENTIFIER>
-                          {result += token.image;}) | (<INTEGER_LITERAL>
-                          {result += token.image;}))
-                          (LOOKAHEAD(2)<RPAREN>
-                          {result += ")";})?))*
+        (LOOKAHEAD(2) op = Operator()
+        {result += op;}
+        (<LPAREN>
+            {result += "(";})?
+            ((<IDENTIFIER>
+                    {result += token.image;}) | (<INTEGER_LITERAL>
+                    {result += token.image;}))
+            (<RPAREN>
+                    {result += ")";})?
+
+        )*
+
 
               { return result;}
 }
