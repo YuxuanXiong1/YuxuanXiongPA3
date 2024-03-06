@@ -29,61 +29,63 @@ public interface PA3Constants {
   /** RegularExpression Id. */
   int NEW = 14;
   /** RegularExpression Id. */
-  int INT = 15;
+  int DEMO = 15;
   /** RegularExpression Id. */
-  int BOOLEAN = 16;
+  int INT = 16;
   /** RegularExpression Id. */
-  int IF = 17;
+  int BOOLEAN = 17;
   /** RegularExpression Id. */
-  int ELSE = 18;
+  int IF = 18;
   /** RegularExpression Id. */
-  int WHILE = 19;
+  int ELSE = 19;
   /** RegularExpression Id. */
-  int PRINTLN = 20;
+  int WHILE = 20;
   /** RegularExpression Id. */
-  int PRINT = 21;
+  int PRINTLN = 21;
   /** RegularExpression Id. */
-  int IDENTIFIER = 22;
+  int PRINT = 22;
   /** RegularExpression Id. */
-  int SEMICOLON = 23;
+  int IDENTIFIER = 23;
   /** RegularExpression Id. */
-  int COMMA = 24;
+  int SEMICOLON = 24;
   /** RegularExpression Id. */
-  int DOT = 25;
+  int COMMA = 25;
   /** RegularExpression Id. */
-  int LPAREN = 26;
+  int DOT = 26;
   /** RegularExpression Id. */
-  int RPAREN = 27;
+  int LPAREN = 27;
   /** RegularExpression Id. */
-  int LBRACE = 28;
+  int RPAREN = 28;
   /** RegularExpression Id. */
-  int RBRACE = 29;
+  int LBRACE = 29;
   /** RegularExpression Id. */
-  int LBRACKET = 30;
+  int RBRACE = 30;
   /** RegularExpression Id. */
-  int RBRACKET = 31;
+  int LBRACKET = 31;
   /** RegularExpression Id. */
-  int ASSIGN = 32;
+  int RBRACKET = 32;
   /** RegularExpression Id. */
-  int PLUS = 33;
+  int ASSIGN = 33;
   /** RegularExpression Id. */
-  int MINUS = 34;
+  int PLUS = 34;
   /** RegularExpression Id. */
-  int MULTIPLY = 35;
+  int MINUS = 35;
   /** RegularExpression Id. */
-  int DIVIDE = 36;
+  int MULTIPLY = 36;
   /** RegularExpression Id. */
-  int EQUALS = 37;
+  int DIVIDE = 37;
   /** RegularExpression Id. */
-  int NOT_EQUALS = 38;
+  int EQUALS = 38;
   /** RegularExpression Id. */
-  int LESS_THAN = 39;
+  int NOT_EQUALS = 39;
   /** RegularExpression Id. */
-  int LESS_THAN_OR_EQUAL = 40;
+  int LESS_THAN = 40;
   /** RegularExpression Id. */
-  int GREATER_THAN = 41;
+  int LESS_THAN_OR_EQUAL = 41;
   /** RegularExpression Id. */
-  int GREATER_THAN_OR_EQUAL = 42;
+  int GREATER_THAN = 42;
+  /** RegularExpression Id. */
+  int GREATER_THAN_OR_EQUAL = 43;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -105,6 +107,7 @@ public interface PA3Constants {
     "\"extends\"",
     "\"return\"",
     "\"new\"",
+    "\"Demo\"",
     "\"int\"",
     "\"boolean\"",
     "\"if\"",

@@ -32,6 +32,7 @@ TOKEN : {
   | < EXTENDS : "extends" >
   | < RETURN : "return" >
   | < NEW : "new" >
+  | < DEMO : "Demo" >
   | < INT : "int" >
   | < BOOLEAN : "boolean" >
   | < IF : "if" >
@@ -112,7 +113,7 @@ void ClassDeclaration() :
 }
 
 String VarDeclaration() :
-{String type; String id;}
+{String type; String id; String id1;}
 {
     LOOKAHEAD(2) type = Type() <IDENTIFIER>
     {
@@ -148,9 +149,9 @@ void MethodDeclaration() :
             )*
         )? <RPAREN> <LBRACE>
     {System.out.println("){");}
-    ( Statement() )*
     ( VarDeclaration() )*
-    (returnStatement())?
+    ( Statement() )*
+    ( returnStatement() )?
     <RBRACE>
     {
         System.out.println("    }");
@@ -160,12 +161,12 @@ void MethodDeclaration() :
 String returnStatement() :
 {String method;}
 {
-    LOOKAHEAD(2) <RETURN> Expression() <SEMICOLON>
-    |LOOKAHEAD(2) <RETURN> <LPAREN> method = MethodCall() <RPAREN> <SEMICOLON>
-    {
-        System.out.println("        return " + token.image + ";");
-        return "return " + token.image + ";";
-    }
+    LOOKAHEAD(2) <RETURN> <LPAREN> method = MethodCall() <RPAREN> <SEMICOLON>
+        {
+            System.out.println("    return(" + method + ");");
+            return "return(" + method + ");";
+        }
+    |LOOKAHEAD(2) <RETURN> Expression() <SEMICOLON>
 }
 
 String Type() :
@@ -179,6 +180,8 @@ String Type() :
     {return "String";}
     | <VOID>
     {return "void";}
+    | <DEMO>
+    {return "Demo";}
 }
 
 void PrintStatement() :
@@ -254,19 +257,13 @@ String ObjectInstantiation() :
 
 String MethodCall() :
 { Token id; Token integer1; Token integer2; String result;}
-{
-    LOOKAHEAD(2) id = <IDENTIFIER> <LPAREN> integer1 = <INTEGER_LITERAL> <COMMA> integer2 = <INTEGER_LITERAL> <RPAREN>
+{   LOOKAHEAD(2) integer1 = <IDENTIFIER> <DOT> integer2 = <IDENTIFIER>
+    {
+        return integer1.image + "." + integer2.image;
+    }
+    |LOOKAHEAD(2) id = <IDENTIFIER> <LPAREN> integer1 = <INTEGER_LITERAL> <COMMA> integer2 = <INTEGER_LITERAL> <RPAREN>
     {
         return id + "(" + integer1 + ", " + integer2 + ")";
     }
     |LOOKAHEAD(2) <LPAREN> Expression() <RPAREN> <DOT> <IDENTIFIER> (<LPAREN> Expression() ( <COMMA> Expression() )* )? <RPAREN>
-    |LOOKAHEAD(2) <IDENTIFIER>
-    {
-        result = token.image + ".";
-    }
-                  <DOT> <IDENTIFIER>
-    {
-        result += token.image;
-        return result;
-    }
 }
