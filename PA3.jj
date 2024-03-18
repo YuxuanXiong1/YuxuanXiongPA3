@@ -3,11 +3,19 @@ options {
 }
 
 PARSER_BEGIN(PA3)
+import java.io.*;
+import java.io.PrintStream;
 
 public class PA3 {
-    public static void main(String[] args) throws ParseException {
+    public static void main(String[] args) throws ParseException, IOException {
+        PrintStream originalOut = System.out;
+        PrintStream fileOut = new PrintStream("./output.java");
+        System.setOut(fileOut);
         PA3 parser = new PA3(System.in);
         parser.Program();
+        fileOut.close();
+
+        System.setOut(originalOut);
         System.out.println("Parse success!");
     }
 }
